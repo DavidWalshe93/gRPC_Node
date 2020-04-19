@@ -1,0 +1,24 @@
+// Created by David Walshe on 19/04/2020
+
+syntax = "proto3";
+
+package calculator;
+
+message Data {
+  float number1 = 1;
+  float number2 = 2;
+  string operation = 3;
+}
+
+message CalculationRequest {
+  Data data = 1;
+}
+
+message CalculationResponse {
+  float result = 1;
+}
+
+service CalculationService {
+  // Unary
+  rpc Calculate(CalculationRequest) returns (CalculationResponse) {};
+}
