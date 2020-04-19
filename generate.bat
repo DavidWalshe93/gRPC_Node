@@ -3,6 +3,8 @@ SET protoc_gen_path=%%F
 )
 ECHO "protoc-gen-path: %protoc_gen_path%"
 
-protoc.exe -I=. .\proto\dummy.proto --js_out=import_style=commonjs,binary:.\server --grpc_out=.\server --plugin=protoc-gen-grpc=%protoc_gen_path%
-protoc.exe -I=. .\proto\greet.proto --js_out=import_style=commonjs,binary:.\server --grpc_out=.\server --plugin=protoc-gen-grpc=%protoc_gen_path%
-protoc.exe -I=. .\proto\calculator.proto --js_out=import_style=commonjs,binary:.\server --grpc_out=.\server --plugin=protoc-gen-grpc=%protoc_gen_path%
+SET proto_out=".\proto_build"
+
+protoc.exe -I=. .\proto\dummy.proto --js_out=import_style=commonjs,binary:%proto_out% --grpc_out=%proto_out% --plugin=protoc-gen-grpc=%protoc_gen_path%
+protoc.exe -I=. .\proto\greet.proto --js_out=import_style=commonjs,binary:%proto_out% --grpc_out=%proto_out% --plugin=protoc-gen-grpc=%protoc_gen_path%
+protoc.exe -I=. .\proto\calculator.proto --js_out=import_style=commonjs,binary:%proto_out% --grpc_out=%proto_out% --plugin=protoc-gen-grpc=%protoc_gen_path%

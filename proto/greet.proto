@@ -7,6 +7,10 @@ message Greeting {
   string last_name = 2;
 }
 
+// =====================================================================================================================
+// Unary API Messages
+// =====================================================================================================================
+
 message GreetRequest {
   Greeting greeting = 1;
 }
@@ -15,7 +19,53 @@ message GreetResponse {
   string result = 1;
 }
 
+// =====================================================================================================================
+// Streaming API Messages
+// =====================================================================================================================
+
+message GreetManyTimesRequest {
+  Greeting greeting = 1;
+}
+
+message GreetManyTimesResponse {
+  string result = 1;
+}
+
+// =====================================================================================================================
+// Client Streaming API Messages
+// =====================================================================================================================
+
+message LongGreetRequest {
+  Greeting greeting = 1;
+}
+
+message LongGreetResponse {
+  string result = 1;
+}
+
+// =====================================================================================================================
+// Bi-Directional Streaming API Messages
+// =====================================================================================================================
+
+message GreetEveryoneRequest {
+  Greeting greeting = 1;
+}
+
+message GreetEveryoneResponse {
+  string result = 1;
+}
+
+// =====================================================================================================================
+// Services
+// =====================================================================================================================
+
 service GreetService {
-  // Unary
+  // Unary API
   rpc Greet(GreetRequest) returns (GreetResponse) {};
+  // Streaming API
+  rpc GreetManyTimes (GreetManyTimesRequest) returns (stream GreetManyTimesResponse) {};
+  // Client Streaming API
+  rpc LongGreet (stream LongGreetRequest) returns (LongGreetResponse) {};
+  // Bi-Di Streaming API
+  rpc GreetEveryone (stream GreetEveryoneRequest) returns (stream GreetEveryoneResponse) {};
 }
