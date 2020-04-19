@@ -5,7 +5,10 @@
 const grpc = require("grpc");
 const greets = require("../proto_build/proto/greet_pb");
 const service = require("../proto_build/proto/greet_grpc_pb");
+const calc = require("../proto_build/proto/calculator_pb");
+const calcService = require("../proto_build/proto/calculator_grpc_pb");
 
+// =====================================================================================================================
 /**
  * Unary API
   */
@@ -33,6 +36,7 @@ const callGreetings = () => {
     })
 };
 
+// =====================================================================================================================
 /**
  * Streaming API
  */
@@ -71,6 +75,7 @@ const callGreetManyTimes = () => {
     });
 };
 
+// =====================================================================================================================
 /**
  * Client Streaming API
  */
@@ -112,9 +117,14 @@ const callLongGreeting = () => {
             call.end()
         }
     })
-
 };
 
+// =====================================================================================================================
+/**
+ * Bi-Directional Streaming service
+ *
+ * @returns {Promise<void>}
+ */
 const callBiDirect = async () => {
     const client = getClientConnection();
 
@@ -164,12 +174,58 @@ const getClientConnection = () => {
     )
 };
 
+// =====================================================================================================================
+
+const doErrorCall = () => {
+    const deadline = getRPCDeadline(1);
+
+    const client = new calcService.CalculatorServiceClient(
+        "localhost:50051",
+        grpc.credentials.createInsecure()
+    );
+
+    let number = 5;
+    const squareRootRequest = new calc.SquareRootRequest();
+    squareRootRequest.setNumber(number);
+
+    client.squareRoot(squareRootRequest, {deadline: deadline}, (error, response) => {
+        if(!error) {
+            console.log("Square root is ", response.getNumberRoot());
+        } else {
+            console.log(error);
+        }
+    })
+};
+
+// =====================================================================================================================
+
+const getRPCDeadline = (rpcType) => {
+    let timeAllowed = 5000;
+
+    switch(rpcType) {
+        case 1:
+            timeAllowed = 1000;
+            break;
+        case 2:
+            timeAllowed = 7000;
+            break;
+        default:
+            console.log("Invalid RPC Type: Using default timeout")
+    }
+
+    return new Date(Date.now() + timeAllowed)
+};
+
+// =====================================================================================================================
+
 const main = () => {
     // callGreetings()
     // callGreetManyTimes()
     // callLongGreeting();
-    callBiDirect();
+    // callBiDirect();
+    doErrorCall()
 };
+
 
 
 main();

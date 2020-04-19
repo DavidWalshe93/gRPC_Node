@@ -7,7 +7,11 @@ const grpc = require("grpc");
 // Local packages
 const greets = require("../proto_build/proto/greet_pb");
 const service = require("../proto_build/proto/greet_grpc_pb");
+const calc = require("../proto_build/proto/calculator_pb");
+const calcService = require("../proto_build/proto/calculator_grpc_pb");
 
+
+// =====================================================================================================================
 /**
  Implements the greet Unary RPC method
  */
@@ -26,7 +30,7 @@ const greet = (call, res) => {
     res(null, greeting)
 };
 
-
+// =====================================================================================================================
 /**
  * Streaming API method implementation.
  *
@@ -38,7 +42,7 @@ const greetManyTimes = (call, callback) => {
     const firstName = call.request.getGreeting().getFirstName();
 
     // Setup a one second interval to see streaming usage.
-    let count = 0, intervalID = setInterval(function() {
+    let count = 0, intervalID = setInterval(function () {
         // Setup response
         const greetManyTimesResponse = new greets.GreetManyTimesResponse();
         greetManyTimesResponse.setResult(firstName + " " + count);
@@ -55,6 +59,7 @@ const greetManyTimes = (call, callback) => {
     }, 1000);
 };
 
+// =====================================================================================================================
 /**
  * Client Streaming API implementation.
  *
@@ -75,13 +80,14 @@ const longGreet = (call, callback) => {
     });
 
     call.on("end", () => {
-       const response = new greets.LongGreetResponse();
-       response.setResult("Long Greet Client Streaming");
+        const response = new greets.LongGreetResponse();
+        response.setResult("Long Greet Client Streaming");
 
-       callback(null, response);
+        callback(null, response);
     })
 };
 
+// =====================================================================================================================
 /**
  * BiDi Streaming API implementation.
  */
@@ -122,6 +128,27 @@ const sleep = async (interval) => {
     });
 };
 
+// =====================================================================================================================
+const squareRoot = (call, callback) => {
+    const number = call.request.getNumber();
+
+    if (number >= 0) {
+        // Happy path.
+        let numberRoot = Math.sqrt(number);
+        let response = new calc.SquareRootResponse();
+        response.setNumberRoot(numberRoot);
+
+        callback(null, response)
+    } else {
+        // Error handling.
+        return callback({
+            code: grpc.status.INVALID_ARGUMENT,
+            message: "Number cannot be negative"
+        });
+    }
+}
+
+// =====================================================================================================================
 const main = () => {
     const server = new grpc.Server();
 
@@ -131,6 +158,10 @@ const main = () => {
         greetManyTimes: greetManyTimes,
         longGreet: longGreet,
         greetEveryone: greetEveryone
+    });
+
+    server.addService(calcService.CalculatorServiceService, {
+        squareRoot: squareRoot
     });
 
     // Start server.

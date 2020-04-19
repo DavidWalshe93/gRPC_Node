@@ -4,21 +4,16 @@ syntax = "proto3";
 
 package calculator;
 
-message Data {
-  float number1 = 1;
-  float number2 = 2;
-  string operation = 3;
+message SquareRootRequest {
+  int32 number = 1;
 }
 
-message CalculationRequest {
-  Data data = 1;
+message SquareRootResponse {
+  double number_root = 1;
 }
 
-message CalculationResponse {
-  float result = 1;
-}
-
-service CalculationService {
+service CalculatorService {
   // Unary
-  rpc Calculate(CalculationRequest) returns (CalculationResponse) {};
+  // This RPC will throw an error if the sent number is negative.
+  rpc SquareRoot (SquareRootRequest) returns (SquareRootResponse);
 }
